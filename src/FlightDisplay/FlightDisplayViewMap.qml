@@ -302,6 +302,14 @@ FlightMap {
         largeMapView:   mainIsMap
     }
 
+    //Test code
+    RadarVisuals{
+        map:                    flightMap
+        longitude:              35.282089
+        latitude:               -120.660800
+    }
+
+
     GeoFenceMapVisuals {
         map:                    flightMap
         myGeoFenceController:   _geoFenceController
