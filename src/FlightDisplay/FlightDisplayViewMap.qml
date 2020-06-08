@@ -302,7 +302,7 @@ FlightMap {
         largeMapView:   mainIsMap
     }
 
-    //Test code
+    //Custom radar visuals.
     RadarVisuals{
         map:                    flightMap
         longitude:              35.282089

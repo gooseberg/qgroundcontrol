@@ -17,21 +17,26 @@ import QGroundControl.FlightMap     1.0
 
 Item {
     id: _root
+    //The following properties must be set by the consumer.
     property var        map
     property var        longitude
     property var        latitude
     property var        imPath:     "file:///C:/Users/Robin/Desktop/DUCK.jpg"
+
 
     property var        _RadarVisual
     property var        _pinColor:  "red"
     property var        _imOpacity: 1.00
     property bool       _isVisible: false
 
+//    Component.onCompleted: {    //TODO: Instead of creating one component on render, create as many as needed based on file watcher system.
+//        _RadarVisual = radarVisualComponent.createObject(map)
+//        map.addMapItem(_RadarVisual)
+//    }
 
-
-    Component.onCompleted: {    //TODO: Instead of creating one component on render, create as many as needed based on file watcher system.
-        _RadarVisual = radarVisualComponent.createObject(map)
-        map.addMapItem(_RadarVisual)
+    function newFile(path, longitude, latitude){
+        _RadarVisualComponent.createObject(map)
+        map.addMapItem(_RadarVisual) //Not sure if you can reuse _radarVisual
     }
 
     Component {

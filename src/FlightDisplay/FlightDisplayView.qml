@@ -39,6 +39,10 @@ Item {
         }
     }
 
+    RadarVisualController {
+        id: _radarVisualController
+    }
+
     property alias  guidedController:              guidedActionsController
     property bool   activeVehicleJoystickEnabled:  activeVehicle ? activeVehicle.joystickEnabled : false
     property bool   mainIsMap:                     QGroundControl.videoManager.hasVideo ? QGroundControl.loadBoolGlobalSetting(_mainIsMapKey,  true) : true
@@ -642,6 +646,12 @@ Item {
                     buttonVisible:      !_guidedController.showPause,
                     buttonEnabled:      _anyActionAvailable,
                     action:             -1
+                },
+                {   name:               qsTr("Radar Vis"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      true,
+                    action:             -2
                 }
             ]
 
@@ -654,6 +664,8 @@ Item {
                     if (action === -1) {
                         guidedActionList.model   = _actionModel
                         guidedActionList.visible = true
+                    } else if(action === -2) {
+                        _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
                     } else {
                         _guidedController.confirmAction(action)
                     }
