@@ -41,6 +41,23 @@ Item {
 
     RadarVisualController {
         id: _radarVisualController
+        property var map: _fMap
+        property var _radarVisualComponent
+        property var _radarVisualObject
+        property bool clearPinsEnabled: false
+
+        Component.onCompleted:{
+            _radarVisualComponent = Qt.createComponent("qrc:/qml/QGroundControl/Controls/RadarVisuals.qml")
+        }
+        onAddPin: {
+            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path})
+            map.addMapItem(_radarVisualObject)
+            pinList.push(_radarVisualObject)
+            clearPinsEnabled = true;
+        }
+        function clearPins(){
+            //TODO: find a way to keep track of pins and remove them when the corresponding file is removed.
+        }
     }
 
     property alias  guidedController:              guidedActionsController
@@ -652,7 +669,15 @@ Item {
                     buttonVisible:      true,
                     buttonEnabled:      true,
                     action:             -2
+                },
+                {
+                    name:               qsTr("Clear Pins"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      _radarVisualController.clearPinsEnabled,
+                    action:             -3
                 }
+
             ]
 
             onClicked: {
@@ -666,6 +691,8 @@ Item {
                         guidedActionList.visible = true
                     } else if(action === -2) {
                         _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
+                    } else if(action === -3){
+                        _radarVisualController.clearPins();
                     } else {
                         _guidedController.confirmAction(action)
                     }
@@ -820,5 +847,4 @@ Item {
             }
         }
     }
-
 }

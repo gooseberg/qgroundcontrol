@@ -31,6 +31,10 @@ void DirWatcher::stopWatching(){
     _instance = 0;
 }
 
+DirWatcher* DirWatcher::getDirWatcher(){
+    return _instance;
+}
+
 //This slot is invoked when a watched directory is updated.
 void DirWatcher::slotDirectoryChanged(const QString& path){
     //qDebug()<<"Directory updated: "<<path; //FOR DEBUGGING (Creates too many messages)
@@ -59,12 +63,14 @@ void DirWatcher::slotDirectoryChanged(const QString& path){
     if(!addedFileList.isEmpty() && !removedFileList.isEmpty()){
         if(addedFileList.count() == 1 && removedFileList.count() == 1){   //File was renamed
             qDebug()<<"File was renamed from "<<removedFileList.first()<<" to "<<addedFileList.first();
+            emit fileRenamed(path, addedFileList.first());
         }
     } else {
         if(!addedFileList.isEmpty()){ //File has been added.
             foreach(QString file, addedFileList){
                 //Do something for each file!
                 qDebug()<<"New file added: "<<file;
+                emit fileAdded(path, file);
             }
         }
         if(!removedFileList.isEmpty()){ //File has been removed.
@@ -72,6 +78,7 @@ void DirWatcher::slotDirectoryChanged(const QString& path){
             foreach(QString file, removedFileList){
                 //Do something for each file!
                 qDebug()<<"File removed: "<<file;
+                emit fileRemoved(path, file);
             }
         }
     }
