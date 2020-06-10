@@ -41,6 +41,7 @@ public:
     Q_PROPERTY(QVariantList     visualTransectPoints        READ visualTransectPoints                               NOTIFY visualTransectPointsChanged)
 
     Q_PROPERTY(bool             followTerrain               READ followTerrain              WRITE setFollowTerrain  NOTIFY followTerrainChanged)
+    Q_PROPERTY(bool             useTerrainFrame             READ useTerrainFrame            WRITE setUseTerrainFrame NOTIFY useTerrainFrameChanged)
     Q_PROPERTY(Fact*            terrainAdjustTolerance      READ terrainAdjustTolerance                             CONSTANT)
     Q_PROPERTY(Fact*            terrainAdjustMaxDescentRate READ terrainAdjustMaxDescentRate                        CONSTANT)
     Q_PROPERTY(Fact*            terrainAdjustMaxClimbRate   READ terrainAdjustMaxClimbRate                          CONSTANT)
@@ -63,10 +64,12 @@ public:
     double          coveredArea             (void) const;
     bool            hoverAndCaptureAllowed  (void) const;
     bool            followTerrain           (void) const { return _followTerrain; }
+    bool            useTerrainFrame         (void) const { return _useTerrainFrame; }
 
     virtual double  timeBetweenShots        (void) { return 0; } // Most be overridden. Implementation here is needed for unit testing.
 
     void setFollowTerrain(bool followTerrain);
+    void setUseTerrainFrame(bool useTerrainFrame);
 
     double  triggerDistance         (void) const { return _cameraCalc.adjustedFootprintFrontal()->rawValue().toDouble(); }
     bool    hoverAndCaptureEnabled  (void) const { return hoverAndCapture()->rawValue().toBool(); }
@@ -127,6 +130,7 @@ signals:
     void visualTransectPointsChanged    (void);
     void coveredAreaChanged             (void);
     void followTerrainChanged           (bool followTerrain);
+    void useTerrainFrameChanged         (bool useTerrainFrame);
 
 protected slots:
     void _setDirty                          (void);
@@ -179,6 +183,7 @@ protected:
     double          _cruiseSpeed;
     CameraCalc      _cameraCalc;
     bool            _followTerrain;
+    bool            _useTerrainFrame;
 
     QObject*            _loadedMissionItemsParent;	///< Parent for all items in _loadedMissionItems for simpler delete
     QList<MissionItem*> _loadedMissionItems;		///< Mission items loaded from plan file
@@ -198,6 +203,7 @@ protected:
     static const char* _jsonVisualTransectPointsKey;
     static const char* _jsonItemsKey;
     static const char* _jsonFollowTerrainKey;
+    static const char* _jsonUseTerrainFrameKey;
     static const char* _jsonCameraShotsKey;
 
     static const int _terrainQueryTimeoutMsecs;

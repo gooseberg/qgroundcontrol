@@ -24,4 +24,5 @@ public:
     DEFINE_SETTINGFACT(aboveTerrainWarning)
     DEFINE_SETTINGFACT(showMissionItemStatus)
     DEFINE_SETTINGFACT(takeoffItemNotRequired)
+    DEFINE_SETTINGFACT(terrainFrameWarning)
 };

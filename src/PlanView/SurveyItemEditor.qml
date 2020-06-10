@@ -209,9 +209,17 @@ Rectangle {
                     cameraCalc:                     missionItem.cameraCalc
                     vehicleFlightIsFrontal:         true
                     distanceToSurfaceLabel:         qsTr("Altitude")
-                    distanceToSurfaceAltitudeMode:  missionItem.followTerrain ?
-                                                        QGroundControl.AltitudeModeAboveTerrain :
-                                                        (missionItem.cameraCalc.distanceToSurfaceRelative ? QGroundControl.AltitudeModeRelative : QGroundControl.AltitudeModeAbsolute)
+                    distanceToSurfaceAltitudeMode:  {
+                        if(missionItem.followTerrain){
+                            QGroundControl.AltitudeModeAboveTerrain
+                        } else if (missionItem.cameraCalc.distanceToSurfaceRelative) {
+                            QGroundControl.AltitudeModeRelative
+                        } else if(missionItem.useTerrainFrame) {
+                            QGroundControl.AltitudeModeTerrainFrame
+                        } else {
+                            QGroundControl.AltitudeModeAbsolute
+                        }
+                    }
                     frontalDistanceLabel:           qsTr("Trigger Dist")
                     sideDistanceLabel:              qsTr("Spacing")
                 }
@@ -341,12 +349,34 @@ Rectangle {
                     spacing:        _margin
                     visible:        terrainHeader.checked
 
+                    QGCRadioButton {
+                        id:         noTerrainFollowingCheckBox
+                        text:       qsTr("No terrain following")
+                        checked:    !missionItem.followTerrain
+                        onClicked:  {
+                            missionItem.useTerrainFrame = false
+                            missionItem.followTerrain = false
+                        }
 
-                    QGCCheckBox {
+                    }
+
+                    QGCRadioButton {
                         id:         followsTerrainCheckBox
                         text:       qsTr("Vehicle follows terrain")
                         checked:    missionItem.followTerrain
-                        onClicked:  missionItem.followTerrain = checked
+                        onClicked:  {
+                            missionItem.useTerrainFrame = false
+                            missionItem.followTerrain = true
+                        }
+                    }
+                    QGCRadioButton {
+                        id:         useTerrainFrameCheckBox
+                        text:       qsTr("Use Terrain Frames")
+                        checked:    missionItem.useTerrainFrame
+                        onClicked:  {
+                            missionItem.useTerrainFrame = true
+                            missionItem.followTerrain = false
+                        }
                     }
 
                     GridLayout {

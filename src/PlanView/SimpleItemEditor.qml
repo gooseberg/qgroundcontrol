@@ -214,7 +214,7 @@ Rectangle {
                                 text:           qsTr("Terrain Frame")
                                 checkable:      true
                                 checked:        missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame
-                                visible:        missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame
+                                visible:        QGroundControl.corePlugin.options.showMissionTerrainFrame
                                 onTriggered:    missionItem.altitudeMode = QGroundControl.AltitudeModeTerrainFrame
                             }
                         }
