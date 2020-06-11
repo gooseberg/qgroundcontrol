@@ -45,20 +45,89 @@ Item {
         property var _radarVisualComponent
         property var _radarVisualObject
         property bool clearPinsEnabled: false
+        property variant pinList: []
+        property variant tempPinObj
+        property int iterator : 0
 
         Component.onCompleted:{
             _radarVisualComponent = Qt.createComponent("qrc:/qml/QGroundControl/Controls/RadarVisuals.qml")
         }
         onAddPin: {
-            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path})
+//            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path})
+            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, componentPinId: pinId, pinObjectList: pinList})
             map.addMapItem(_radarVisualObject)
+//            pinList.push(_radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, id: pinId}))
+//            pinList.push(_radarVisualObject)
+//            map.addMapItem(pinList[pinList.length-1])
             pinList.push(_radarVisualObject)
             clearPinsEnabled = true;
         }
+        onDestroyPin: {
+//            removePin(pinId)
+//            _radarVisualObject.testFunction()
+            _radarVisualObject.removePin(pinList,pinId)
+        } // end onDestroyPin
+
+//        function removePin(pinId){
+//            var tempLen = pinList.length    // The number of pins
+//            var tempObj // The object that will be removed
+//            var i
+//            // Loop through the list looking for the object that has the same pin id
+//            for (i = 0 ; i < tempLen ; ++i){
+//                tempObj = pinList[i]     // Get a new pin
+
+//                // Check if the pin id matches with the pin id from the list and break out of the loop if so
+//                if (tempObj.componentPinId === pinId){
+//                   break
+//                }
+//            } // end for (i = 0 ; i < tempLen ; ++i)
+
+//            // Remove the pin and let the user know
+//            tempPinObj = pinList[i]
+//            console.log("Removing pinId: " + tempObj.componentPinId)
+//            tempPinObj.destroy()            // Remove the pin from the map
+//            pinList.splice(i,1)             // Remove the pin from the list
+
+//            // Check if there are no more pins
+//            tempLen = pinList.length
+//            console.log("Pins remaining: " + tempLen + "\n")
+//            if (tempLen === 0){
+//                clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left
+//            }
+//        } // end function removePin(pinId)
+
         function clearPins(){
-            //TODO: find a way to keep track of pins and remove them when the corresponding file is removed.
-        }
-    }
+            // Check if there are pins on the map to remove, if there is, then remove them all
+            var tempLen = pinList.length    // The number of pins to remove
+            var i
+            console.log("Number of pins: " + tempLen)
+            if(tempLen !== 0){
+
+                // Remove all the pins and let the user know that they are being removed
+                console.log("Removing all pins...\n")
+                var tempObj // The object that will be removed
+                for (i = 0 ; i < tempLen ; ++i){
+                    tempObj = pinList[i]     // Get a new pin
+                    tempObj.destroy()        // Remove the pin
+                }
+
+                pinList.length = 0  // Clear the list so that new pins can be added later
+
+                // Check if all the pins have been removed and let the user know the results
+                tempLen = pinList.length
+                console.log("Pins remaining: " + tempLen + "\n")
+                if (tempLen === 0){
+                    console.log("Removing all pins complete.\n")
+                    clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left
+                }else{
+                    console.log("Removing all pins ERROR.\n")
+                }
+
+            }else{  // Let the user know that there were no pins to be removed
+                console.log("No pins to remove.\n")
+            } // end if else if(pinList.length() !== 0)
+        } // end function clearPins()
+    }// end RadarVisualController
 
     property alias  guidedController:              guidedActionsController
     property bool   activeVehicleJoystickEnabled:  activeVehicle ? activeVehicle.joystickEnabled : false
@@ -664,6 +733,7 @@ Item {
                     buttonEnabled:      _anyActionAvailable,
                     action:             -1
                 },
+                // ********************** Radar Visualization *************************
                 {   name:               qsTr("Radar Vis"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
@@ -671,13 +741,20 @@ Item {
                     action:             -2
                 },
                 {
+                    name:               qsTr("Load Pins"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      _radarVisualController.clearPinsEnabled, // Replace this with a function to load from folder
+                    action:             -3
+                },
+                {
                     name:               qsTr("Clear Pins"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
-                    buttonEnabled:      _radarVisualController.clearPinsEnabled,
-                    action:             -3
+                    buttonEnabled:      _radarVisualController.clearPinsEnabled, // This does not work yet
+                    action:             -4
                 }
-
+                // ********************** End Radar Visualization *************************
             ]
 
             onClicked: {
@@ -689,10 +766,15 @@ Item {
                     if (action === -1) {
                         guidedActionList.model   = _actionModel
                         guidedActionList.visible = true
+
+                // ********************** Radar Visualization *************************
                     } else if(action === -2) {
                         _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
-                    } else if(action === -3){
+                    } else if (action === -3){
+                        // Add load from file function (load all pin from folder)
+                    } else if(action === -4){
                         _radarVisualController.clearPins();
+                // ********************** End Radar Visualization *************************
                     } else {
                         _guidedController.confirmAction(action)
                     }

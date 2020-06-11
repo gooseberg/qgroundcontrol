@@ -20,11 +20,12 @@ private slots:
     void fileRemoved(const QString& path, const QString& file);
 
 signals:
-    void addPin(const QString& path, const QString& lat, const QString& lon);
-    void destroyPin(const QString& path);
+    void addPin(const QString& path, const QString& lat, const QString& lon, const QString& pinId);
+    void destroyPin(const QString& path, const QString& pinId);
 
 private:
     static QMap<QString, QString> parseFileName(const QString& file);
+
 };
 
 #endif // RADARVISUALCONTROLLER_H

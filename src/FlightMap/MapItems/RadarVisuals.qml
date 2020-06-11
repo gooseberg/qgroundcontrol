@@ -16,16 +16,18 @@ import QGroundControl.FlightMap     1.0
 
 MapQuickItem {
     id: radarVisualComponent
-
-    property var        longitude
-    property var        latitude
-    property var        imPath
+//    id: pinId
+    // Constructed in FlightDisplayView.qml
+    property var        longitude       //  Set when constructed from signal lot
+    property var        latitude        //  Set when constructed from signal lat
+    property var        imPath          //  Set when constructed from signal path
+    property var        componentPinId  //  Set when constructed from signal pinId
+    property variant    pinObjectList   //  The list of pins set by the parent
 
     property var        _RadarVisual
     property var        _pinColor:  "red"
     property var        _imOpacity: 1.00
     property bool       _isVisible: false
-
 
     anchorPoint.x:          width / 2   // center the pin
     anchorPoint.y:          height      // make anchor at the bottom of the pin
@@ -43,7 +45,7 @@ MapQuickItem {
          width:          ScreenTools.defaultFontPixelHeight * 2
          height:         ScreenTools.defaultFontPixelHeight * 2
          visible:        true
-         color:          "red"
+         color:          _pinColor
 
          Rectangle{
              id:        imBorder
@@ -63,11 +65,34 @@ MapQuickItem {
                         anchors.bottom: imBorder.bottom
              }
              Label {
+                         id: lon
                          text: " Longitude: " + longitude.toString()
                          color: "white"
                          visible: _isVisible
                          anchors.topMargin: 15
                          anchors.top: lat.top
+             }
+//             Label {
+//                     text: " id: " + pinId.toString()
+//                     color: "white"
+//                     visible: _isVisible
+//                     anchors.topMargin: 15
+//                     anchors.top: lon.top
+//             }
+
+             Button{// To destroy the pin
+                 id: destroyPinButton
+                 anchors.right: imBorder.right
+                 anchors.bottom: imBorder.bottom
+                 text:                  qsTr("Delete pin")
+//                 onClicked:             radarVisualComponent.destroy()
+                 visible:               _isVisible
+                 hoverEnabled:          true
+
+                 onClicked: {            
+                     removePin(pinObjectList,componentPinId)
+                     radarVisualComponent.destroy()
+                 }
              }
          }
 
@@ -111,6 +136,34 @@ MapQuickItem {
                 _pinColor = "red"
                 _isVisible = false;
             }
+        } // end onClicked
+    } // end MouseArea
+
+    function removePin(pinList,pinId){
+        var tempLen = pinList.length    // The number of pins
+        var tempObj // The object that will be removed
+        var i
+        // Loop through the list looking for the object that has the same pin id
+        for (i = 0 ; i < tempLen ; ++i){
+            tempObj = pinList[i]     // Get a new pin
+
+            // Check if the pin id matches with the pin id from the list and break out of the loop if so
+            if (tempObj.componentPinId === pinId){
+               break
+            }
+        } // end for (i = 0 ; i < tempLen ; ++i)
+
+        // Remove the pin and let the user know
+        console.log("Removing pinId: " + tempObj.componentPinId)
+        tempObj.destroy()            // Remove the pin from the map
+        pinList.splice(i,1)             // Remove the pin from the list
+
+        // Check if there are no more pins
+        tempLen = pinList.length
+        console.log("Pins remaining: " + tempLen + "\n")
+        if (tempLen === 0){
+            clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left *********** add to object declaration
         }
-    }
+    } // end function removePin(pinId)
+
 }
