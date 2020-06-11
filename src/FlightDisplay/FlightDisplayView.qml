@@ -39,6 +39,11 @@ Item {
         }
     }
 
+    // ***************************************** Data Visualization *******************************************************
+    // The following code was added to add and remove pins to and from the map containing an image associated with the pin.
+    // See RadarVisuals.qml, RadarVisualController.h, RadarVisualController.cpp, and other blocks of code below
+    // Cal Poly Senior Project: Robin Morales, Christelle Medino, Jonathon Church, Willis Berrios 6/2020
+
     RadarVisualController {
         id: _radarVisualController
         property var map: _fMap
@@ -52,50 +57,25 @@ Item {
         Component.onCompleted:{
             _radarVisualComponent = Qt.createComponent("qrc:/qml/QGroundControl/Controls/RadarVisuals.qml")
         }
+
         onAddPin: {
-//            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path})
-            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, componentPinId: pinId, pinObjectList: pinList})
-            map.addMapItem(_radarVisualObject)
-//            pinList.push(_radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, id: pinId}))
-//            pinList.push(_radarVisualObject)
-//            map.addMapItem(pinList[pinList.length-1])
-            pinList.push(_radarVisualObject)
-            clearPinsEnabled = true;
-        }
+            // Create a pin, add it to the map, add it the list, and enable the clear pins button
+            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, componentPinId: pinId, pinObjectList: pinList, parentId: _radarVisualController})
+            map.addMapItem(_radarVisualObject)      // Add the pin to the map
+            pinList.push(_radarVisualObject)        // Add the pin object to the list
+            clearPinsEnabled = true;                // Make the clear bin button enabled
+        } // end onAddPin
+
         onDestroyPin: {
-//            removePin(pinId)
-//            _radarVisualObject.testFunction()
-            _radarVisualObject.removePin(pinList,pinId)
+            // Runs when a file is removed from the folder. It removes the pin from the map, the list, and destroys the pin object
+            var tempLen = pinList.length    // The number of pins
+            // Check if the pin has already been deleted, delete it if it has not
+            if(tempLen !== 0){
+                clearPinsEnabled = _radarVisualObject.removePin(pinList,pinId)  // Remove the pin from map and list, destroy the object, and set the clear pins enabled button indicator to true or false.
+            }
         } // end onDestroyPin
 
-//        function removePin(pinId){
-//            var tempLen = pinList.length    // The number of pins
-//            var tempObj // The object that will be removed
-//            var i
-//            // Loop through the list looking for the object that has the same pin id
-//            for (i = 0 ; i < tempLen ; ++i){
-//                tempObj = pinList[i]     // Get a new pin
-
-//                // Check if the pin id matches with the pin id from the list and break out of the loop if so
-//                if (tempObj.componentPinId === pinId){
-//                   break
-//                }
-//            } // end for (i = 0 ; i < tempLen ; ++i)
-
-//            // Remove the pin and let the user know
-//            tempPinObj = pinList[i]
-//            console.log("Removing pinId: " + tempObj.componentPinId)
-//            tempPinObj.destroy()            // Remove the pin from the map
-//            pinList.splice(i,1)             // Remove the pin from the list
-
-//            // Check if there are no more pins
-//            tempLen = pinList.length
-//            console.log("Pins remaining: " + tempLen + "\n")
-//            if (tempLen === 0){
-//                clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left
-//            }
-//        } // end function removePin(pinId)
-
+        // This function removes all the pins from the map, empties the pin list, and disables the clear all pins button
         function clearPins(){
             // Check if there are pins on the map to remove, if there is, then remove them all
             var tempLen = pinList.length    // The number of pins to remove
@@ -128,6 +108,8 @@ Item {
             } // end if else if(pinList.length() !== 0)
         } // end function clearPins()
     }// end RadarVisualController
+
+    // ***************************************** End Data Visualization *******************************************************
 
     property alias  guidedController:              guidedActionsController
     property bool   activeVehicleJoystickEnabled:  activeVehicle ? activeVehicle.joystickEnabled : false
@@ -733,7 +715,7 @@ Item {
                     buttonEnabled:      _anyActionAvailable,
                     action:             -1
                 },
-                // ********************** Radar Visualization *************************
+                // ********************** Radar Visualization ****************************
                 {   name:               qsTr("Radar Vis"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
@@ -767,7 +749,7 @@ Item {
                         guidedActionList.model   = _actionModel
                         guidedActionList.visible = true
 
-                // ********************** Radar Visualization *************************
+                // ********************** Radar Visualization *****************************
                     } else if(action === -2) {
                         _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
                     } else if (action === -3){
@@ -775,6 +757,7 @@ Item {
                     } else if(action === -4){
                         _radarVisualController.clearPins();
                 // ********************** End Radar Visualization *************************
+
                     } else {
                         _guidedController.confirmAction(action)
                     }

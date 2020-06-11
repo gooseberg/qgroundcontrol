@@ -23,15 +23,15 @@ MapQuickItem {
     property var        imPath          //  Set when constructed from signal path
     property var        componentPinId  //  Set when constructed from signal pinId
     property variant    pinObjectList   //  The list of pins set by the parent
+    property var        parentId        //  The grandest parent to get access to its properties, specifically clearPinsEnabled.  Set by parent
 
-    property var        _RadarVisual
+    property var        _RadarVisual        //  ************* Should this be removed
     property var        _pinColor:  "red"
     property var        _imOpacity: 1.00
     property bool       _isVisible: false
 
     anchorPoint.x:          width / 2   // center the pin
     anchorPoint.y:          height      // make anchor at the bottom of the pin
-    //coordinate:             QtPositioning.coordinate(35.282089, -120.660800)//Temporary
     coordinate:             QtPositioning.coordinate(longitude, latitude)
     z:                      QGroundControl.zOrderMapItems + 2
     sourceItem:
@@ -85,12 +85,11 @@ MapQuickItem {
                  anchors.right: imBorder.right
                  anchors.bottom: imBorder.bottom
                  text:                  qsTr("Delete pin")
-//                 onClicked:             radarVisualComponent.destroy()
                  visible:               _isVisible
                  hoverEnabled:          true
-
-                 onClicked: {            
-                     removePin(pinObjectList,componentPinId)
+                 onClicked: {
+                     // Remove the pin from the list, return if the clear pins button should be enabled or not, and destroy the pin object
+                     parentId.clearPinsEnabled = removePin(pinObjectList,componentPinId)
                      radarVisualComponent.destroy()
                  }
              }
@@ -128,6 +127,7 @@ MapQuickItem {
         anchors.margins:    ScreenTools.isMobile ? -ScreenTools.defaultFontPixelHeight : 0
         width:              50
 
+        // If the pin is click make it blue, otherwise keep it red
         onClicked: {
             if(_pinColor == "red"){
                 _pinColor = "blue"
@@ -139,6 +139,7 @@ MapQuickItem {
         } // end onClicked
     } // end MouseArea
 
+    // This function removes a pin from the map, removes it from the pin list, and returns if the clear all pins button should be disabled
     function removePin(pinList,pinId){
         var tempLen = pinList.length    // The number of pins
         var tempObj // The object that will be removed
@@ -161,9 +162,12 @@ MapQuickItem {
         // Check if there are no more pins
         tempLen = pinList.length
         console.log("Pins remaining: " + tempLen + "\n")
+
+        // Return if the clear all pins button should be enabled or disabled
         if (tempLen === 0){
-            clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left *********** add to object declaration
+            return false
+        }else{
+            return true
         }
     } // end function removePin(pinId)
-
 }
