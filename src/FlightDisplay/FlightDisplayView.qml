@@ -730,7 +730,7 @@ Item {
                     name:               qsTr("Load Pins"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
-                    buttonEnabled:      _radarVisualController.loadPinsEnabled,                   // ******** may have to change dynamically
+                    buttonEnabled:      _radarVisualController.loadPinsEnabled,
                     action:             -3
                 },
                 // Button to clear all pins
@@ -738,7 +738,7 @@ Item {
                     name:               qsTr("Clear Pins"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
-                    buttonEnabled:      _radarVisualController.clearPinsEnabled, // This does not work yet
+                    buttonEnabled:      _radarVisualController.clearPinsEnabled,
                     action:             -4
                 }
                 // ********************** End Radar Visualization *************************
@@ -762,7 +762,7 @@ Item {
                     } else if (action === -3){      // Load pins button pressed
                         // Clear all the pins from the screen, then load all the pins that are in the folder
                         _radarVisualController.clearPins();
-                        _radarVisualController.loadPinsFromFolder(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue)                     // *********** maybe pass in if their are already pins on the screen that should be cleared first
+                        _radarVisualController.loadPinsFromFolder(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue)
                     } else if(action === -4){       // Clear all pins button pressed
                         _radarVisualController.clearPins();
                 // ********************** End Radar Visualization *************************
