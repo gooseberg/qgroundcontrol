@@ -29,11 +29,11 @@ MapQuickItem {
     property var        _imOpacity: 1.00
     property bool       _isVisible: false
 
-    anchorPoint.x:          width / 2   // center the pin
-    anchorPoint.y:          height      // make anchor at the bottom of the pin
-    coordinate:             QtPositioning.coordinate(longitude, latitude)
-    z:                      QGroundControl.zOrderMapItems + 2
-    sourceItem:
+    anchorPoint.x:      width / 2   // center the pin
+    anchorPoint.y:      height      // make anchor at the bottom of the pin
+    coordinate:         QtPositioning.coordinate(longitude, latitude)
+    z:                  QGroundControl.zOrderMapItems + 2
+    sourceItem:         // Everything below this line is the "sourceItem"
 
     QGCColoredImage{
          id:             geoTag

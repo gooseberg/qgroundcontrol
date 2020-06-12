@@ -81,12 +81,13 @@ Item {
         function clearPins(){
             // Check if there are pins on the map to remove, if there is, then remove them all
             var tempLen = pinList.length    // The number of pins to remove
+            var orginalNumPins = tempLen;
             var i
             console.log("Number of pins: " + tempLen)
             if(tempLen !== 0){
 
                 // Remove all the pins and let the user know that they are being removed
-                console.log("Removing all pins...\n")
+                console.log("Removing all pins...")
                 var tempObj // The object that will be removed
                 for (i = 0 ; i < tempLen ; ++i){
                     tempObj = pinList[i]     // Get a new pin
@@ -97,8 +98,9 @@ Item {
 
                 // Check if all the pins have been removed and let the user know the results
                 tempLen = pinList.length
-                console.log("Pins remaining: " + tempLen + "\n")
+                console.log("Pins remaining: " + tempLen)
                 if (tempLen === 0){
+                    console.log("Removed: " + orginalNumPins + " pins.")
                     console.log("Removing all pins complete.\n")
                     clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left
                 }else{

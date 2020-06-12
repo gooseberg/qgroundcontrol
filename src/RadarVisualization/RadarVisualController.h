@@ -23,7 +23,7 @@ public:
     Q_INVOKABLE void loadPinsFromFolder(QString);
 
 private slots:
-    void fileAdded(const QString& path, const QString& file);
+    bool fileAdded(const QString& path, const QString& file);
     void fileRemoved(const QString& path, const QString& file);
 
 signals:
@@ -31,8 +31,10 @@ signals:
     void destroyPin(const QString& path, const QString& pinId);
 
 private:
-    static QMap<QString, QString> parseFileName(const QString& file);
+    static QMap<QString, QString> parseFileName(const QString& file, bool &isValid);
 
 };
+
+bool validNumber(QString& str);
 
 #endif // RADARVISUALCONTROLLER_H
