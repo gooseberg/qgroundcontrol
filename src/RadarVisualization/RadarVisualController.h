@@ -25,7 +25,6 @@ public:
 private slots:
     void fileAdded(const QString& path, const QString& file);
     void fileRemoved(const QString& path, const QString& file);
-//    void loadPin(const QString& path);
 
 signals:
     void addPin(const QString& path, const QString& lat, const QString& lon, const QString& pinId);

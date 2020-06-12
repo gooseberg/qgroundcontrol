@@ -13,7 +13,7 @@ void RadarVisualController::start(QString path){
 
     connect(DirWatcher::getDirWatcher(), SIGNAL(fileAdded  (QString, QString)), this, SLOT(fileAdded(QString, QString)));
     connect(DirWatcher::getDirWatcher(), SIGNAL(fileRemoved(QString, QString)), this, SLOT(fileRemoved(QString, QString)));
-    //connect(DirWatcher::getDirWatcher(), SIGNAL(fileRemoved(QString, QString)), this, SLOT(fileRemoved(QString, QString)));
+//    connect(RadarVisualController::RadarVisualController(), SIGNAL(loadPinsFromFolder(QString)),SLOT(fileRemoved(QString, QString)));
 
 }
 
@@ -36,18 +36,16 @@ void RadarVisualController::loadPinsFromFolder(QString path){
     }else{
         qDebug()<<"Loading pins from folder complete.";
     }
-
-
 }
 
 void RadarVisualController::fileAdded(const QString& path, const QString& file){
     QString networkLocation = path;
 
-//    std::cout << "FILE: " << &file << std::endl;
-
     QMap<QString, QString> fileInfo = parseFileName(file);      // Put this in try cach block **********************
 
     networkLocation = networkLocation.prepend("file:///").append("/").append(file);
+
+    qDebug()<< ("path: " + path + " networkLocation: " + networkLocation);
 
     emit addPin(path, fileInfo["lat"], fileInfo["lon"], fileInfo["id"]);
 }
