@@ -45,9 +45,7 @@ void RadarVisualController::fileAdded(const QString& path, const QString& file){
 
     networkLocation = networkLocation.prepend("file:///").append("/").append(file);
 
-    qDebug()<< ("path: " + path + " networkLocation: " + networkLocation);
-
-    emit addPin(path, fileInfo["lat"], fileInfo["lon"], fileInfo["id"]);
+    emit addPin(networkLocation, fileInfo["lat"], fileInfo["lon"], fileInfo["id"]);
 }
 
 void RadarVisualController::fileRemoved(const QString& path, const QString& file){
