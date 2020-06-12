@@ -756,7 +756,7 @@ void TransectStyleComplexItem::setUseTerrainFrame(bool useTerrainFrame)
 {
     if (useTerrainFrame != _useTerrainFrame) {
         _useTerrainFrame = useTerrainFrame;
-        emit useTerrainFrameChanged(useTerrainFrame);
+            emit useTerrainFrameChanged(useTerrainFrame);
     }
 }
 

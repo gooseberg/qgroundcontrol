@@ -48,13 +48,13 @@ FactTextField {
             if (!_aboveTerrainWarning.rawValue) {
                 mainWindow.showComponentDialog(aboveTerrainWarning, qsTr("Warning"), mainWindow.showDialogDefaultWidth, StandardButton.Ok)
             }
-        } else if (missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame) {
+        } else if (altitudeMode === QGroundControl.AltitudeModeTerrainFrame) {
             if (!_terrainFrameWarning.rawValue) {
                 mainWindow.showComponentDialog(terrainFrameWarning, qsTr("Warning"), mainWindow.showDialogDefaultWidth, StandardButton.Ok)
             }
             _altitudeModeExtraUnits = _altModeTerrainFrameExtraUnits
         } else {
-            console.log("AltitudeFactTextField Internal error: Unknown altitudeMode", altitudeMode)
+            console.log("AltitudeFactTextField Internal error: Unknown altitudeMode", altitudeMode, QGroundControl.AltitudeModeTerrainFrame)
             _altitudeModeExtraUnits = ""
         }
     }
