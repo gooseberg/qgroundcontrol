@@ -49,7 +49,9 @@ Item {
         property var map: _fMap
         property var _radarVisualComponent
         property var _radarVisualObject
-        property bool clearPinsEnabled: false
+        property bool startVisEnabled:  true    // The start button enabler
+        property bool clearPinsEnabled: false   // Clear all pins button enabler
+        property bool loadPinsEnabled: false    // Load pins button enabler
         property variant pinList: []
         property variant tempPinObj
         property int iterator : 0
@@ -716,19 +718,22 @@ Item {
                     action:             -1
                 },
                 // ********************** Radar Visualization ****************************
+                // Button to start adding pins
                 {   name:               qsTr("Radar Vis"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
-                    buttonEnabled:      true,
+                    buttonEnabled:      _radarVisualController.startVisEnabled,
                     action:             -2
                 },
+                // Button to load pins from folder
                 {
                     name:               qsTr("Load Pins"),
                     iconSource:         "/res/action.svg",
                     buttonVisible:      true,
-                    buttonEnabled:      _radarVisualController.clearPinsEnabled, // Replace this with a function to load from folder
+                    buttonEnabled:      _radarVisualController.loadPinsEnabled,                   // ******** may have to change dynamically
                     action:             -3
                 },
+                // Button to clear all pins
                 {
                     name:               qsTr("Clear Pins"),
                     iconSource:         "/res/action.svg",
@@ -750,11 +755,15 @@ Item {
                         guidedActionList.visible = true
 
                 // ********************** Radar Visualization *****************************
-                    } else if(action === -2) {
+                    } else if(action === -2) {      // Start adding pins buttun pressed
                         _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
-                    } else if (action === -3){
-                        // Add load from file function (load all pin from folder)
-                    } else if(action === -4){
+                        _radarVisualController.loadPinsEnabled = true;          // Enable load pins from folder (file watcher must be on to avoid other sequence of button presses from crashing the program)
+                        _radarVisualController.startVisEnabled = false;         // Disable the start button
+                    } else if (action === -3){      // Load pins button pressed
+                        // Clear all the pins from the screen, then load all the pins that are in the folder
+                        _radarVisualController.clearPins();
+                        _radarVisualController.loadPinsFromFolder(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue)                     // *********** maybe pass in if their are already pins on the screen that should be cleared first
+                    } else if(action === -4){       // Clear all pins button pressed
                         _radarVisualController.clearPins();
                 // ********************** End Radar Visualization *************************
 

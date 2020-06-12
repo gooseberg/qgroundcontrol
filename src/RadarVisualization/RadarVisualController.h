@@ -7,6 +7,12 @@
 #include <QMap>
 #include "SettingsManager.h"
 
+// Includes for loading pins from folder
+#include <string>
+#include <filesystem>
+using namespace std;
+namespace fs = std::experimental::filesystem;
+
 class RadarVisualController : public QObject
 {
     Q_OBJECT
@@ -14,10 +20,12 @@ class RadarVisualController : public QObject
 public:
     ~RadarVisualController();
     Q_INVOKABLE void start(QString);
+    Q_INVOKABLE void loadPinsFromFolder(QString);
 
 private slots:
     void fileAdded(const QString& path, const QString& file);
     void fileRemoved(const QString& path, const QString& file);
+//    void loadPin(const QString& path);
 
 signals:
     void addPin(const QString& path, const QString& lat, const QString& lon, const QString& pinId);

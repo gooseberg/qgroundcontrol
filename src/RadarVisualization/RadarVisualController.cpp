@@ -1,23 +1,55 @@
 #include "RadarVisualController.h"
 
+//Debugging
+#include <string>
+#include <iostream>
+using namespace std;
+
 void RadarVisualController::start(QString path){
     qDebug()<<"Starting Radar Visualization Controller";
     qDebug()<<"Adding path to watcher: "<<path;
     DirWatcher::stopWatching();
     DirWatcher::addPath(path);
 
-    connect(DirWatcher::getDirWatcher(), SIGNAL(fileAdded(QString, QString)), this, SLOT(fileAdded(QString, QString)));
+    connect(DirWatcher::getDirWatcher(), SIGNAL(fileAdded  (QString, QString)), this, SLOT(fileAdded(QString, QString)));
     connect(DirWatcher::getDirWatcher(), SIGNAL(fileRemoved(QString, QString)), this, SLOT(fileRemoved(QString, QString)));
+    //connect(DirWatcher::getDirWatcher(), SIGNAL(fileRemoved(QString, QString)), this, SLOT(fileRemoved(QString, QString)));
+
+}
+
+void RadarVisualController::loadPinsFromFolder(QString path){
+    qDebug()<<"Loading pins from folder...";
+    QString qFile;
+    std::string tempPath = path.toStdString();
+    // Loop through the files in the folder and create a pin for every file
+    int i = 0;
+    for (const auto & entry : fs::directory_iterator(tempPath)){
+        std::string file = entry.path().filename().string();
+        qFile = QString::fromStdString(file);
+        fileAdded(path,qFile);
+        i += 1;
+    }
+
+    // Let the user know the outcome of loading pins, if any were loaded or not
+    if(i == 0){
+        qDebug()<<"The folder is empty. No pins to add.";
+    }else{
+        qDebug()<<"Loading pins from folder complete.";
+    }
+
+
 }
 
 void RadarVisualController::fileAdded(const QString& path, const QString& file){
     QString networkLocation = path;
 
+//    std::cout << "FILE: " << &file << std::endl;
+
     QMap<QString, QString> fileInfo = parseFileName(file);      // Put this in try cach block **********************
 
     networkLocation = networkLocation.prepend("file:///").append("/").append(file);
 
-    emit addPin(networkLocation, fileInfo["lat"], fileInfo["lon"], fileInfo["id"]);
+    emit addPin(path, fileInfo["lat"], fileInfo["lon"], fileInfo["id"]);
 }
 
 void RadarVisualController::fileRemoved(const QString& path, const QString& file){
