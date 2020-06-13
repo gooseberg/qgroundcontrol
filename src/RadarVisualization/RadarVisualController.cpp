@@ -5,6 +5,10 @@
 #include <iostream>
 using namespace std;
 
+// measure time:
+#include <chrono>
+using namespace std::chrono;
+
 // Start the file watching
 void RadarVisualController::start(QString path){
     qDebug()<<"Starting Radar Visualization Controller";
@@ -20,6 +24,9 @@ void RadarVisualController::start(QString path){
 
 // When the user presses the load pins button, read all the file names in the folder and add pins to the map that are associated with valid file names
 void RadarVisualController::loadPinsFromFolder(QString path){
+    // Start time
+    auto start = high_resolution_clock::now();
+
     qDebug()<<"Loading pins from folder...";
     QString qFile;
     std::string tempPath = path.toStdString();
@@ -47,6 +54,12 @@ void RadarVisualController::loadPinsFromFolder(QString path){
         qDebug()<< "Loaded: " + QString::number(i-inValidCount) + " pins.";
         qDebug()<<"Loading pins from folder complete.\n";
     }
+
+    //End time
+    auto stop = high_resolution_clock::now();
+    // Output time
+    auto duration = duration_cast<microseconds>(stop - start);
+    qDebug() << "Time taken: " << duration.count()/1000000.0 << " seconds" << endl;
 }
 
 // When a file is added to the folder, add a pin to the map
