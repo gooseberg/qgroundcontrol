@@ -10,7 +10,7 @@ void DirWatcher::addPath(QString path){
 
         //Connect signals from QFileSystemWatcher to slots in our DirWatcher class.
         connect(_instance->_sysWatcher,  SIGNAL(directoryChanged(QString)), _instance, SLOT(slotDirectoryChanged(QString)));
-        connect(_instance->_sysWatcher,  SIGNAL(fileChanged(QString)), _instance, SLOT(slotFileChanged(QString)));
+        connect(_instance->_sysWatcher,  SIGNAL(fileChanged(QString)),      _instance, SLOT(slotFileChanged(QString)));
     }
 
     //Add path to watch.
