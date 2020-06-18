@@ -35,6 +35,7 @@ const char* TransectStyleComplexItem::_jsonCameraCalcKey =                  "Cam
 const char* TransectStyleComplexItem::_jsonVisualTransectPointsKey =        "VisualTransectPoints";
 const char* TransectStyleComplexItem::_jsonItemsKey =                       "Items";
 const char* TransectStyleComplexItem::_jsonFollowTerrainKey =               "FollowTerrain";
+const char* TransectStyleComplexItem::_jsonUseTerrainFrameKey =             "UseTerrainFrame";
 const char* TransectStyleComplexItem::_jsonCameraShotsKey =                 "CameraShots";
 
 const int   TransectStyleComplexItem::_terrainQueryTimeoutMsecs =           1000;
@@ -48,6 +49,7 @@ TransectStyleComplexItem::TransectStyleComplexItem(Vehicle* vehicle, bool flyVie
     , _cameraShots                      (0)
     , _cameraCalc                       (vehicle, settingsGroup)
     , _followTerrain                    (false)
+    , _useTerrainFrame                  (false)
     , _loadedMissionItemsParent         (nullptr)
     , _metaDataMap                      (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/TransectStyle.SettingsGroup.json"), this))
     , _turnAroundDistanceFact           (settingsGroup, _metaDataMap[_vehicle->multiRotor() ? turnAroundDistanceMultiRotorName : turnAroundDistanceName])
@@ -65,7 +67,8 @@ TransectStyleComplexItem::TransectStyleComplexItem(Vehicle* vehicle, bool flyVie
     connect(&_turnAroundDistanceFact,                   &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
     connect(&_hoverAndCaptureFact,                      &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
     connect(&_refly90DegreesFact,                       &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
-    connect(this,                      &TransectStyleComplexItem::followTerrainChanged, this, &TransectStyleComplexItem::_rebuildTransects);
+    connect(this,                   &TransectStyleComplexItem::followTerrainChanged,    this, &TransectStyleComplexItem::_rebuildTransects);
+    connect(this,                   &TransectStyleComplexItem::useTerrainFrameChanged,  this, &TransectStyleComplexItem::_rebuildTransects);
     connect(&_terrainAdjustMaxClimbRateFact,            &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
     connect(&_terrainAdjustMaxDescentRateFact,          &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
     connect(&_terrainAdjustToleranceFact,               &Fact::valueChanged,            this, &TransectStyleComplexItem::_rebuildTransects);
@@ -88,7 +91,8 @@ TransectStyleComplexItem::TransectStyleComplexItem(Vehicle* vehicle, bool flyVie
     connect(&_cameraTriggerInTurnAroundFact,            &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
     connect(&_hoverAndCaptureFact,                      &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
     connect(&_refly90DegreesFact,                       &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
-    connect(this,                      &TransectStyleComplexItem::followTerrainChanged, this, &TransectStyleComplexItem::_setDirty);
+    connect(this,                   &TransectStyleComplexItem::followTerrainChanged,    this, &TransectStyleComplexItem::_setDirty);
+    connect(this,                   &TransectStyleComplexItem::useTerrainFrameChanged,  this, &TransectStyleComplexItem::_setDirty);
     connect(&_terrainAdjustMaxClimbRateFact,            &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
     connect(&_terrainAdjustMaxDescentRateFact,          &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
     connect(&_terrainAdjustToleranceFact,               &Fact::valueChanged,            this, &TransectStyleComplexItem::_setDirty);
@@ -144,6 +148,7 @@ void TransectStyleComplexItem::_save(QJsonObject& complexObject)
     innerObject[hoverAndCaptureName] =              _hoverAndCaptureFact.rawValue().toBool();
     innerObject[refly90DegreesName] =               _refly90DegreesFact.rawValue().toBool();
     innerObject[_jsonFollowTerrainKey] =            _followTerrain;
+    innerObject[_jsonUseTerrainFrameKey] =          _useTerrainFrame;
     innerObject[_jsonCameraShotsKey] =              _cameraShots;
 
     if (_followTerrain) {
@@ -217,6 +222,7 @@ bool TransectStyleComplexItem::_load(const QJsonObject& complexObject, bool forP
         { _jsonVisualTransectPointsKey,     QJsonValue::Array,  !forPresets },
         { _jsonItemsKey,                    QJsonValue::Array,  !forPresets },
         { _jsonFollowTerrainKey,            QJsonValue::Bool,   true },
+        { _jsonUseTerrainFrameKey,          QJsonValue::Bool,   true },
         { _jsonCameraShotsKey,              QJsonValue::Double, false },    // Not required since it was missing from initial implementation
     };
     if (!JsonHelper::validateKeys(innerObject, innerKeyInfoList, errorString)) {
@@ -257,6 +263,7 @@ bool TransectStyleComplexItem::_load(const QJsonObject& complexObject, bool forP
     _hoverAndCaptureFact.setRawValue            (innerObject[hoverAndCaptureName].toBool());
     _refly90DegreesFact.setRawValue             (innerObject[refly90DegreesName].toBool());
     _followTerrain = innerObject[_jsonFollowTerrainKey].toBool();
+    _useTerrainFrame = innerObject[_jsonUseTerrainFrameKey].toBool();
 
     // These two keys where not included in initial implementation so they are optional. Without them the values will be
     // incorrect when loaded though.
@@ -742,6 +749,14 @@ void TransectStyleComplexItem::setFollowTerrain(bool followTerrain)
     if (followTerrain != _followTerrain) {
         _followTerrain = followTerrain;
         emit followTerrainChanged(followTerrain);
+    }
+}
+
+void TransectStyleComplexItem::setUseTerrainFrame(bool useTerrainFrame)
+{
+    if (useTerrainFrame != _useTerrainFrame) {
+        _useTerrainFrame = useTerrainFrame;
+            emit useTerrainFrameChanged(useTerrainFrame);
     }
 }
 

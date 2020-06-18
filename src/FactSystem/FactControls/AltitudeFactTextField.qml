@@ -31,6 +31,7 @@ FactTextField {
 
     property string _altitudeModeExtraUnits:    _altModeNoneExtraUnits
     property Fact   _aboveTerrainWarning:       QGroundControl.settingsManager.planViewSettings.aboveTerrainWarning
+    property Fact   _terrainFrameWarning:       QGroundControl.settingsManager.planViewSettings.terrainFrameWarning
 
     onAltitudeModeChanged: updateAltitudeModeExtraUnits()
 
@@ -47,10 +48,13 @@ FactTextField {
             if (!_aboveTerrainWarning.rawValue) {
                 mainWindow.showComponentDialog(aboveTerrainWarning, qsTr("Warning"), mainWindow.showDialogDefaultWidth, StandardButton.Ok)
             }
-        } else if (missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame) {
+        } else if (altitudeMode === QGroundControl.AltitudeModeTerrainFrame) {
+            if (!_terrainFrameWarning.rawValue) {
+                mainWindow.showComponentDialog(terrainFrameWarning, qsTr("Warning"), mainWindow.showDialogDefaultWidth, StandardButton.Ok)
+            }
             _altitudeModeExtraUnits = _altModeTerrainFrameExtraUnits
         } else {
-            console.log("AltitudeFactTextField Internal error: Unknown altitudeMode", altitudeMode)
+            console.log("AltitudeFactTextField Internal error: Unknown altitudeMode", altitudeMode, QGroundControl.AltitudeModeTerrainFrame)
             _altitudeModeExtraUnits = ""
         }
     }
@@ -72,6 +76,28 @@ FactTextField {
                 FactCheckBox {
                     text: qsTr("Don't show again")
                     fact: _aboveTerrainWarning
+                }
+            }
+        }
+    }
+
+    Component {
+        id: terrainFrameWarning
+        QGCViewDialog {
+            ColumnLayout {
+                anchors.left:   parent.left
+                anchors.right:  parent.right
+                spacing:        ScreenTools.defaultFontPixelHeight
+
+                QGCLabel {
+                    Layout.fillWidth:   true
+                    wrapMode:           Text.WordWrap
+                    text:               qsTr("'Terrain Frame' is only supported by Ardupilot with a downward facing rangefinder. Use with caution.")
+                }
+
+                FactCheckBox {
+                    text: qsTr("Don't show again")
+                    fact: _terrainFrameWarning
                 }
             }
         }

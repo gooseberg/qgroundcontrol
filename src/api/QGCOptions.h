@@ -58,6 +58,7 @@ public:
     Q_PROPERTY(bool                     showMissionStatus               READ showMissionStatus              CONSTANT)
     Q_PROPERTY(bool                     guidedActionsRequireRCRSSI      READ guidedActionsRequireRCRSSI     CONSTANT)
     Q_PROPERTY(bool                     showMissionAbsoluteAltitude     READ showMissionAbsoluteAltitude    NOTIFY showMissionAbsoluteAltitudeChanged)
+    Q_PROPERTY(bool                     showMissionTerrainFrame         READ showMissionTerrainFrame        NOTIFY showMissionTerrainFrameChanged)  //Added to always show and control visibility of terrain frame as an option when creating waypoints
     Q_PROPERTY(bool                     showSimpleMissionStart          READ showSimpleMissionStart         NOTIFY showSimpleMissionStartChanged)
     Q_PROPERTY(bool                     disableVehicleConnection        READ disableVehicleConnection       CONSTANT)
     Q_PROPERTY(float                    devicePixelRatio                READ devicePixelRatio               NOTIFY devicePixelRatioChanged)
@@ -123,6 +124,7 @@ public:
     virtual bool    showOfflineMapExport            () const { return true; }
     virtual bool    showOfflineMapImport            () const { return true; }
     virtual bool    showMissionAbsoluteAltitude     () const { return true; }
+    virtual bool    showMissionTerrainFrame         () const { return true; }  // Added code ///<true: Always show Terrain Frame as an option
     virtual bool    showSimpleMissionStart          () const { return false; }
     virtual bool    disableVehicleConnection        () const { return false; }  ///< true: vehicle connection is disabled
     virtual bool    checkFirmwareVersion            () const { return true; }
@@ -163,6 +165,7 @@ signals:
     void showOfflineMapExportChanged            ();
     void showOfflineMapImportChanged            ();
     void showMissionAbsoluteAltitudeChanged     ();
+    void showMissionTerrainFrameChanged         ();     //Added code
     void showSimpleMissionStartChanged          ();
     void devicePixelRatioChanged                ();
     void devicePixelDensityChanged              ();

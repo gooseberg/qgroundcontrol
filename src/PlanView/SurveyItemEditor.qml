@@ -209,9 +209,17 @@ Rectangle {
                     cameraCalc:                     missionItem.cameraCalc
                     vehicleFlightIsFrontal:         true
                     distanceToSurfaceLabel:         qsTr("Altitude")
-                    distanceToSurfaceAltitudeMode:  missionItem.followTerrain ?
-                                                        QGroundControl.AltitudeModeAboveTerrain :
-                                                        (missionItem.cameraCalc.distanceToSurfaceRelative ? QGroundControl.AltitudeModeRelative : QGroundControl.AltitudeModeAbsolute)
+                    distanceToSurfaceAltitudeMode:  {
+                        if(missionItem.followTerrain){
+                            QGroundControl.AltitudeModeAboveTerrain
+                        } else if(missionItem.useTerrainFrame) {
+                            QGroundControl.AltitudeModeTerrainFrame
+                        } else if (missionItem.cameraCalc.distanceToSurfaceRelative) {
+                            QGroundControl.AltitudeModeRelative
+                        }  else {
+                            QGroundControl.AltitudeModeAbsolute
+                        }
+                    }
                     frontalDistanceLabel:           qsTr("Trigger Dist")
                     sideDistanceLabel:              qsTr("Spacing")
                 }
@@ -312,7 +320,7 @@ Rectangle {
                             },
                             {
                                 text:       qsTr("Relative altitude"),
-                                enabled:    missionItem.cameraCalc.isManualCamera && !missionItem.followTerrain,
+                                enabled:    missionItem.cameraCalc.isManualCamera && !missionItem.followTerrain && !missionItem.useTerrainFrame,
                                 visible:    QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || (!missionItem.cameraCalc.distanceToSurfaceRelative && !missionItem.followTerrain),
                                 checked:    missionItem.cameraCalc.distanceToSurfaceRelative
                             }
@@ -341,12 +349,36 @@ Rectangle {
                     spacing:        _margin
                     visible:        terrainHeader.checked
 
+                    QGCRadioButton {
+                        id:         noTerrainFollowingCheckBox
+                        text:       qsTr("No terrain following")
+                        //checked:    missionItem.followTerrain
+                        onClicked:  {
+                            missionItem.useTerrainFrame = false
+                            missionItem.followTerrain = false
+                        }
 
-                    QGCCheckBox {
+                    }
+
+                    QGCRadioButton {
                         id:         followsTerrainCheckBox
                         text:       qsTr("Vehicle follows terrain")
                         checked:    missionItem.followTerrain
-                        onClicked:  missionItem.followTerrain = checked
+                        onClicked:  {
+                            missionItem.useTerrainFrame = false
+                            missionItem.followTerrain = true
+                        }
+                    }
+
+                    QGCRadioButton {
+                        id:         useTerrainFrameCheckBox
+                        text:       qsTr("Use Terrain Frames")
+                        checked:    missionItem.useTerrainFrame
+                        onClicked:  {
+                            missionItem.cameraCalc.distanceToSurfaceRelative = false
+                            missionItem.followTerrain = false
+                            missionItem.useTerrainFrame = true
+                        }
                     }
 
                     GridLayout {
@@ -400,9 +432,15 @@ Rectangle {
                     cameraCalc:                     missionItem.cameraCalc
                     vehicleFlightIsFrontal:         true
                     distanceToSurfaceLabel:         qsTr("Altitude")
-                    distanceToSurfaceAltitudeMode:  missionItem.followTerrain ?
-                                                        QGroundControl.AltitudeModeAboveTerrain :
-                                                        missionItem.cameraCalc.distanceToSurfaceRelative
+                    distanceToSurfaceAltitudeMode:  {
+                        if(missionItem.followTerrain){
+                            QGroundControl.AltitudeModeAboveTerrain
+                        } else if(missionItem.useTerrainFrame) {
+                            QGroundControl.AltitudeModeTerrainFrame
+                        } else {
+                            missionItem.cameraCalc.distanceToSurfaceRelative
+                        }
+                    }
                     frontalDistanceLabel:           qsTr("Trigger Dist")
                     sideDistanceLabel:              qsTr("Spacing")
                 }

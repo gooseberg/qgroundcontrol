@@ -22,5 +22,11 @@
     "shortDescription": "Allow missions to not require a takeoff item",
     "type":             "bool",
     "defaultValue":     false
+},
+{
+    "name":             "terrainFrameWarning",
+    "shortDescription": "Don't warn user about 'Terrain Frame' usage",
+    "type":             "bool",
+    "defaultValue":     false
 }
 ]
