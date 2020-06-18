@@ -99,8 +99,6 @@
 #include "VehicleObjectAvoidance.h"
 #include "TrajectoryPoints.h"
 
-#include "RadarVisualController.h" //Custom radar visualization class.
-
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
 #endif
@@ -532,7 +530,6 @@ void QGCApplication::_initCommon()
     qmlRegisterType<LogDownloadController>          (kQGCControllers,                       1, 0, "LogDownloadController");
     qmlRegisterType<SyslinkComponentController>     (kQGCControllers,                       1, 0, "SyslinkComponentController");
     qmlRegisterType<EditPositionDialogController>   (kQGCControllers,                       1, 0, "EditPositionDialogController");
-    qmlRegisterType<RadarVisualController>          (kQGCControllers,                       1, 0, "RadarVisualController");
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK
