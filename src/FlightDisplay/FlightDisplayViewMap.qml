@@ -51,11 +51,9 @@ FlightMap {
     property bool   _airspaceEnabled:           QGroundControl.airmapSupported ? (QGroundControl.settingsManager.airMapSettings.enableAirMap.rawValue && QGroundControl.airspaceManager.connected): false
     property var    _flyViewSettings:           QGroundControl.settingsManager.flyViewSettings
     property bool   _keepMapCenteredOnVehicle:  _flyViewSettings.keepMapCenteredOnVehicle.rawValue
-
     property bool   _disableVehicleTracking:    false
     property bool   _keepVehicleCentered:       mainIsMap ? false : true
-    property bool   _pipping:                   false
-
+    property bool   _pipping:                   false    
     function updateAirspace(reset) {
         if(_airspaceEnabled) {
             var coordinateNW = flightMap.toCoordinate(Qt.point(0,0), false /* clipToViewPort */)
@@ -86,6 +84,49 @@ FlightMap {
         else
             pipIn()
     }
+
+//    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//    RadarVisualController {
+//        id: _radarVisualController
+//        property var _radarVisualComponent
+//        property var _radarVisualObject
+//        Component.onCompleted:{
+//            _radarVisualComponent = Qt.createComponent("qrc:/qml/QGroundControl/Controls/RadarVisuals.qml")
+////            if (_radarVisualComponent.status === Component.Ready){
+////                console.log("Component is ready!",_radarVisualComponent)
+////                _radarVisualObject = _radarVisualComponent.createObject(flightMap)
+
+////                console.log("_radarVisualobject is:",_radarVisualObject)
+
+////                _radarVisualObject.longitude = 35.282085
+////                _radarVisualObject.latitude = -120.660802
+////                _radarVisualObject.imPath = "file:///C:/Users/Robin/Downloads/TestFolder"
+
+////                flightMap.addMapItem(_radarVisualObject)
+////            } else {
+////                console.log(_radarVisualComponent.errorString())
+////            }
+//        }
+
+//        onAddPin: {
+//            console.log("Creating Radar Visuals Component!")
+//            console.log("Component is ready!",_radarVisualComponent)
+//            _radarVisualObject = _radarVisualComponent.createObject(flightMap)
+
+//            console.log("_radarVisualobject is:",_radarVisualObject)
+
+//            _radarVisualObject.longitude = lon
+//            _radarVisualObject.latitude = lat
+//            _radarVisualObject.imPath = path
+
+//            flightMap.addMapItem(_radarVisualObject)
+//        }
+//    }
+
+//    +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
     // Track last known map position and zoom from Fly view in settings
 
@@ -301,7 +342,6 @@ FlightMap {
         map:            flightMap
         largeMapView:   mainIsMap
     }
-
     GeoFenceMapVisuals {
         map:                    flightMap
         myGeoFenceController:   _geoFenceController
@@ -309,7 +349,6 @@ FlightMap {
         planView:               false
         homePosition:           activeVehicle && activeVehicle.homePosition.isValid ? activeVehicle.homePosition :  QtPositioning.coordinate()
     }
-
     // Rally points on map
     MapItemView {
         model: _rallyPointController.points

@@ -45,6 +45,8 @@ Rectangle {
     property real _margins:                     ScreenTools.defaultFontPixelWidth
     property var _planViewSettings:             QGroundControl.settingsManager.planViewSettings
 
+    property Fact _imageSavePath:               QGroundControl.settingsManager.appSettings.imageSavePath
+
     property string _videoSource:               QGroundControl.settingsManager.videoSettings.videoSource.value
     property bool   _isGst:                     QGroundControl.videoManager.isGStreamer
     property bool   _isUDP264:                  _isGst && _videoSource === QGroundControl.settingsManager.videoSettings.udp264VideoSource
@@ -118,7 +120,7 @@ Rectangle {
                     }
                     Rectangle {
                         Layout.preferredWidth:  Math.max(comboGrid.width, miscCol.width) + (_margins * 2)
-                        Layout.preferredHeight: (pathRow.visible ? pathRow.y + pathRow.height : miscColItem.y + miscColItem.height)  + (_margins * 2)
+                        Layout.preferredHeight: (iamgePathRow.visible ? iamgePathRow.y + iamgePathRow.height : miscColItem.y + miscColItem.height)  + (_margins * 2)
                         Layout.fillWidth:       true
                         color:                  qgcPal.windowShade
                         visible:                miscSectionLabel.visible
@@ -376,6 +378,34 @@ Rectangle {
                                     selectExisting: true
                                     selectFolder:   true
                                     onAcceptedForLoad: _savePath.rawValue = file
+                                }
+                            }
+                        }
+                        // Image save path
+                        RowLayout {
+                            id:                 iamgePathRow
+                            anchors.margins:    _margins
+                            anchors.left:       parent.left
+                            anchors.right:      parent.right
+                            anchors.top:        pathRow.bottom
+                            visible:            _savePath.visible && !ScreenTools.isMobile
+
+                            QGCLabel { text: qsTr("Radar Vis Image Save Path") }
+                            QGCTextField {
+                                Layout.fillWidth:   true
+                                readOnly:           true
+                                text:               _imageSavePath.rawValue === "" ? qsTr("<not set>") : _imageSavePath.value
+                            }
+                            QGCButton {
+                                text:       qsTr("Browse")
+                                onClicked:  imageSavePathBrowseDialog.openForLoad()
+                                QGCFileDialog {
+                                    id:             imageSavePathBrowseDialog
+                                    title:          qsTr("Choose the location to save/load files")
+                                    folder:         _imageSavePath.rawValue
+                                    selectExisting: true
+                                    selectFolder:   true
+                                    onAcceptedForLoad: _imageSavePath.rawValue = file
                                 }
                             }
                         }
