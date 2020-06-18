@@ -15,7 +15,6 @@
 #include <QQmlEngine>
 #include <QtQml>
 #include <QStandardPaths>
-#include <QDebug>
 
 const char* AppSettings::parameterFileExtension =   "params";
 const char* AppSettings::planFileExtension =        "plan";
@@ -100,8 +99,6 @@ DECLARE_SETTINGSFACT(AppSettings, language)
 DECLARE_SETTINGSFACT(AppSettings, disableAllPersistence)
 DECLARE_SETTINGSFACT(AppSettings, usePairing)
 DECLARE_SETTINGSFACT(AppSettings, saveCsvTelemetry)
-
-DECLARE_SETTINGSFACT(AppSettings, imageSavePath)
 
 DECLARE_SETTINGSFACT_NO_FUNC(AppSettings, indoorPalette)
 {
@@ -195,13 +192,6 @@ QString AppSettings::crashSavePath(void)
         QDir dir(path);
         return dir.filePath(crashDirectory);
     }
-    return QString();
-}
-
-QString AppSettings::getImageSavePath(void)
-{
-    QString path = imageSavePath()->rawValue().toString();
-    qDebug()<<"Path changed: "<<path;
     return QString();
 }
 
