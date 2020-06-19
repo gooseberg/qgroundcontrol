@@ -92,7 +92,7 @@ FactTextField {
                 QGCLabel {
                     Layout.fillWidth:   true
                     wrapMode:           Text.WordWrap
-                    text:               qsTr("'Terrain Frame' is only supported by Ardupilot with a downward facing rangefinder. Use with caution.")
+                    text:               qsTr("'Terrain Frame' is only supported by Ardupilot with a downward facing rangefinder. Unexpected results may occur if vehicle flies out of rangefinder range. Use with caution.")
                 }
 
                 FactCheckBox {
