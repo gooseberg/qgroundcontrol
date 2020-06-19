@@ -4,11 +4,29 @@ Note: This file only contains high level features or important fixes.
 
 ## 4.0
 
-### 4.0.6 - Not yet released
+## 4.0.9 - Not yet released
+
+* Plan: Fix bugs associated with mission commands which specify and altitude but no lat/lon
+* Fix bug which could prevent view switching from working after altitude mode warning dialog would pop up
+
+## 4.0.8 - Stable
+
+* iOS: Modify QGC file storage location to support new Files app
+* Mobile: Fix Log Replay status bar file selection
+
+## 4.0.7
+
+* Fix video page sizing
+* Virtual Joystick: Fix right stick centering. Fix/add support for rover/sub reverse throttle support.
+* Fix display of multiple ADSB vehicles
+
+### 4.0.6
 
 * Analyze/Log Download - Fix download on mobile versions of QGC
+* Fly: Fix problems where Continue Mission and Change Altitude were not available after a Mission Pause.
+* PX4 Flow: Fix video display problem
 
-### 4.0.5 - Stable
+### 4.0.5
 
 * Solo: Fix mission upload failures
 * Plan: Fix crash when using Create Plan - Survey for fixed wing vehicle

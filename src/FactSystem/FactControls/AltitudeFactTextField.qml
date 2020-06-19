@@ -58,7 +58,6 @@ FactTextField {
             _altitudeModeExtraUnits = ""
         }
     }
-
     Component {
         id: aboveTerrainWarning
         QGCViewDialog {
