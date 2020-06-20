@@ -27,8 +27,6 @@
 #include <QRegularExpression>
 #include <QFontDatabase>
 #include <QQuickWindow>
-#include <QQuickImageProvider>
-#include <QQuickStyle>
 
 #ifdef QGC_ENABLE_BLUETOOTH
 #include <QBluetoothLocalDevice>
@@ -100,7 +98,8 @@
 #include "LogReplayLink.h"
 #include "VehicleObjectAvoidance.h"
 #include "TrajectoryPoints.h"
-#include "QGCImageProvider.h"
+
+#include "RadarVisualController.h" //Custom radar visualization class.
 
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
@@ -215,9 +214,6 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
             }
             permFile.close();
         }
-
-        // Always set style to default, this way QT_QUICK_CONTROLS_STYLE environment variable doesn't cause random changes in ui
-        QQuickStyle::setStyle("Default");
     }
 #endif
 #endif
@@ -536,6 +532,7 @@ void QGCApplication::_initCommon()
     qmlRegisterType<LogDownloadController>          (kQGCControllers,                       1, 0, "LogDownloadController");
     qmlRegisterType<SyslinkComponentController>     (kQGCControllers,                       1, 0, "SyslinkComponentController");
     qmlRegisterType<EditPositionDialogController>   (kQGCControllers,                       1, 0, "EditPositionDialogController");
+    qmlRegisterType<RadarVisualController>          (kQGCControllers,                       1, 0, "RadarVisualController");
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK
@@ -566,10 +563,6 @@ bool QGCApplication::_initForNormalAppBoot()
     QSettings settings;
 
     _qmlAppEngine = toolbox()->corePlugin()->createRootWindow(this);
-
-    // Image provider for PX4 Flow
-    QQuickImageProvider* pImgProvider = dynamic_cast<QQuickImageProvider*>(qgcApp()->toolbox()->imageProvider());
-    _qmlAppEngine->addImageProvider(QStringLiteral("QGCImages"), pImgProvider);
 
     QQuickWindow* rootWindow = (QQuickWindow*)qgcApp()->mainRootWindow();
 

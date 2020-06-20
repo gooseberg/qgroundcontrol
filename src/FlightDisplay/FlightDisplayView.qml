@@ -39,6 +39,82 @@ Item {
         }
     }
 
+    // ***************************************** Data Visualization *******************************************************
+    // The following code was added to add and remove pins to and from the map containing an image associated with the pin.
+    // See RadarVisuals.qml, RadarVisualController.h, RadarVisualController.cpp, and other blocks of code below
+    // Cal Poly Senior Project: Robin Morales, Christelle Medino, Jonathon Church, Willis Berrios 6/2020
+
+    RadarVisualController {
+        id: _radarVisualController
+        property var map: _fMap
+        property var _radarVisualComponent
+        property var _radarVisualObject
+        property bool startVisEnabled:  true    // The start button enabler
+        property bool clearPinsEnabled: false   // Clear all pins button enabler
+        property bool loadPinsEnabled: false    // Load pins button enabler
+        property variant pinList: []
+        property variant tempPinObj
+        property int iterator : 0
+
+        Component.onCompleted:{
+            _radarVisualComponent = Qt.createComponent("qrc:/qml/QGroundControl/Controls/RadarVisuals.qml")
+        }
+
+        onAddPin: {
+            // Create a pin, add it to the map, add it the list, and enable the clear pins button
+            _radarVisualObject = _radarVisualComponent.createObject(map,{longitude: lon, latitude: lat, imPath: path, componentPinId: pinId, pinObjectList: pinList, parentId: _radarVisualController})
+            map.addMapItem(_radarVisualObject)      // Add the pin to the map
+            pinList.push(_radarVisualObject)        // Add the pin object to the list
+            clearPinsEnabled = true;                // Make the clear bin button enabled
+        } // end onAddPin
+
+        onDestroyPin: {
+            // Runs when a file is removed from the folder. It removes the pin from the map, the list, and destroys the pin object
+            var tempLen = pinList.length    // The number of pins
+            // Check if the pin has already been deleted, delete it if it has not
+            if(tempLen !== 0){
+                clearPinsEnabled = _radarVisualObject.removePin(pinList,pinId)  // Remove the pin from map and list, destroy the object, and set the clear pins enabled button indicator to true or false.
+            }
+        } // end onDestroyPin
+
+        // This function removes all the pins from the map, empties the pin list, and disables the clear all pins button
+        function clearPins(){
+            // Check if there are pins on the map to remove, if there is, then remove them all
+            var tempLen = pinList.length    // The number of pins to remove
+            var orginalNumPins = tempLen;
+            var i
+            console.log("Number of pins: " + tempLen)
+            if(tempLen !== 0){
+
+                // Remove all the pins and let the user know that they are being removed
+                console.log("Removing all pins...")
+                var tempObj // The object that will be removed
+                for (i = 0 ; i < tempLen ; ++i){
+                    tempObj = pinList[i]     // Get a new pin
+                    tempObj.destroy()        // Remove the pin
+                }
+
+                pinList.length = 0  // Clear the list so that new pins can be added later
+
+                // Check if all the pins have been removed and let the user know the results
+                tempLen = pinList.length
+                console.log("Pins remaining: " + tempLen)
+                if (tempLen === 0){
+                    console.log("Removed: " + orginalNumPins + " pins.")
+                    console.log("Removing all pins complete.\n")
+                    clearPinsEnabled = false;       // Disable the clear all pins, since there are no pins left
+                }else{
+                    console.log("Removing all pins ERROR.\n")
+                }
+
+            }else{  // Let the user know that there were no pins to be removed
+                console.log("No pins to remove.\n")
+            } // end if else if(pinList.length() !== 0)
+        } // end function clearPins()
+    }// end RadarVisualController
+
+    // ***************************************** End Data Visualization *******************************************************
+
     property alias  guidedController:              guidedActionsController
     property bool   activeVehicleJoystickEnabled:  activeVehicle ? activeVehicle.joystickEnabled : false
     property bool   mainIsMap:                     QGroundControl.videoManager.hasVideo ? QGroundControl.loadBoolGlobalSetting(_mainIsMapKey,  true) : true
@@ -544,17 +620,19 @@ Item {
             z:                          _mapAndVideo.z + 5
             width:                      parent.width  - (_flightVideoPipControl.width / 2)
             height:                     Math.min(mainWindow.height * 0.25, ScreenTools.defaultFontPixelWidth * 16)
-            visible:                    _virtualJoystickEnabled && !QGroundControl.videoManager.fullScreen && !(activeVehicle ? activeVehicle.highLatencyLink : false)
+            visible:                    (_virtualJoystick ? _virtualJoystick.value : false) && !QGroundControl.videoManager.fullScreen && !(activeVehicle ? activeVehicle.highLatencyLink : false)
             anchors.bottom:             _flightVideoPipControl.top
             anchors.bottomMargin:       ScreenTools.defaultFontPixelHeight * 2
             anchors.horizontalCenter:   flightDisplayViewWidgets.horizontalCenter
             source:                     "qrc:/qml/VirtualJoystick.qml"
-            active:                     _virtualJoystickEnabled && !(activeVehicle ? activeVehicle.highLatencyLink : false)
+            active:                     (_virtualJoystick ? _virtualJoystick.value : false) && !(activeVehicle ? activeVehicle.highLatencyLink : false)
 
-            property bool useLightColors:       isBackgroundDark
-            property bool autoCenterThrottle:   QGroundControl.settingsManager.appSettings.virtualJoystickAutoCenterThrottle.rawValue
+            property bool useLightColors: isBackgroundDark
+            // The default behaviour is not centralized throttle
+            property bool centralizeThrottle: _virtualJoystickCentralized ? _virtualJoystickCentralized.value : false
 
-            property bool _virtualJoystickEnabled: QGroundControl.settingsManager.appSettings.virtualJoystick.rawValue
+            property Fact _virtualJoystick: QGroundControl.settingsManager.appSettings.virtualJoystick
+            property Fact _virtualJoystickCentralized: QGroundControl.settingsManager.appSettings.virtualJoystickCentralized
         }
 
         ToolStrip {
@@ -637,9 +715,35 @@ Item {
                 {
                     name:               qsTr("Action"),
                     iconSource:         "/res/action.svg",
-                    buttonVisible:      _anyActionAvailable,
+                    buttonVisible:      !_guidedController.showPause,
+                    buttonEnabled:      _anyActionAvailable,
                     action:             -1
+                },
+                // ********************** Radar Visualization ****************************
+                // Button to start adding pins
+                {   name:               qsTr("Radar Vis"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      _radarVisualController.startVisEnabled,
+                    action:             -2
+                },
+                // Button to load pins from folder
+                {
+                    name:               qsTr("Load Pins"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      _radarVisualController.loadPinsEnabled,
+                    action:             -3
+                },
+                // Button to clear all pins
+                {
+                    name:               qsTr("Clear Pins"),
+                    iconSource:         "/res/action.svg",
+                    buttonVisible:      true,
+                    buttonEnabled:      _radarVisualController.clearPinsEnabled,
+                    action:             -4
                 }
+                // ********************** End Radar Visualization *************************
             ]
 
             onClicked: {
@@ -651,6 +755,20 @@ Item {
                     if (action === -1) {
                         guidedActionList.model   = _actionModel
                         guidedActionList.visible = true
+
+                // ********************** Radar Visualization *****************************
+                    } else if(action === -2) {      // Start adding pins buttun pressed
+                        _radarVisualController.start(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue);
+                        _radarVisualController.loadPinsEnabled = true;          // Enable load pins from folder (file watcher must be on to avoid other sequence of button presses from crashing the program)
+                        _radarVisualController.startVisEnabled = false;         // Disable the start button
+                    } else if (action === -3){      // Load pins button pressed
+                        // Clear all the pins from the screen, then load all the pins that are in the folder
+                        _radarVisualController.clearPins();
+                        _radarVisualController.loadPinsFromFolder(QGroundControl.settingsManager.appSettings.imageSavePath.rawValue)
+                    } else if(action === -4){       // Clear all pins button pressed
+                        _radarVisualController.clearPins();
+                // ********************** End Radar Visualization *************************
+
                     } else {
                         _guidedController.confirmAction(action)
                     }
@@ -805,5 +923,4 @@ Item {
             }
         }
     }
-
 }

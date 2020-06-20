@@ -111,9 +111,9 @@
     "defaultValue":     false
 },
 {
-    "name":             "virtualJoystickAutoCenterThrottle",
-    "shortDescription": "Auto-Center Throttle",
-    "longDescription":  "If enabled the throttle stick will snap back to center when released.",
+    "name":             "virtualJoystickCentralized",
+    "shortDescription": "Set virtual joystick to be centralize throttle (spring-loaded).",
+    "longDescription":  "If this option is enabled the virtual joystick throttle stick will be centralized.",
     "type":             "bool",
     "defaultValue":     false
 },
@@ -175,6 +175,13 @@
     "name":             "savePath",
     "shortDescription": "Application save directory",
     "longDescription":  "Directory to which all data files  are saved/loaded from",
+    "type":             "string",
+    "defaultValue":     ""
+},
+{
+    "name":             "imageSavePath",
+    "shortDescription": "Radar visualization image save directory",
+    "longDescription":  "The directory to which any realtime geotagged images are saved to be displayed to the map.",
     "type":             "string",
     "defaultValue":     ""
 },
